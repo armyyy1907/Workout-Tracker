@@ -1,2 +1,9 @@
 # Workout-Tracker
-A simple, responsive workout tracking web app built with HTML, CSS, and JavaScript. Track exercises, sets, reps, weights, workout history, and training streaks with local browser storage and progress tracking.
+
+## Features
+
+- Track workouts
+- Log weight and reps
+- View workout history
+- Track streaks
+- Monitor progress
