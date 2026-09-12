@@ -2,8 +2,10 @@
 
 ## Features
 
-- Track workouts
-- Log weight and reps
-- View workout history
-- Track streaks
-- Monitor progress
+workout tracker
+gym log
+training log
+workout logger
+personal gym log
+gym, but organized.
+just tracking.
