@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Armyy — Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121210;
+    --surface:#1a1a17;
+    --surface-2:#232220;
+    --border:rgba(255,255,255,.08);
+    --text:#ece7dc;
+    --text-dim:#948d80;
+    --accent:#9fb4c9;
+    --accent-soft:rgba(159,180,201,.14);
+    --red:#d3695d;
+    --blue:#5c93d8;
+    --gold:#d9a94a;
+    --green:#5fae7e;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{color-scheme:dark;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(159,180,201,.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(217,169,74,.06), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    line-height:1.5;
+  }
+  .app{
+    max-width:760px;
+    margin:0 auto;
+    padding:28px 18px 80px;
+  }
+  /* ---------- header ---------- */
+  header.header{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding-bottom:22px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:22px;
+  }
+  .brand-name{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.15rem;}
+  .today-info{text-align:left; min-width:150px; display:flex; flex-direction:column; gap:4px;}
+  .date-input{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.92rem;
+    background:transparent; border:1px solid var(--border); border-radius:8px;
+    color:var(--text); padding:6px 8px; width:fit-content;
+  }
+  .today-split{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.02rem; margin-top:2px;}
+  .streak{display:flex; flex-direction:column; align-items:flex-end; gap:6px;}
+  .streak-squares{display:flex; gap:4px;}
+  .sq{width:10px; height:10px; border-radius:3px; background:var(--surface-2); border:1px solid var(--border);}
+  .sq.on{background:var(--accent); border-color:var(--accent);}
+  .streak-count{font-size:.78rem; color:var(--text-dim);}
+  .streak-count b{color:var(--text); font-family:'Space Grotesk',sans-serif;}
+
+  /* ---------- tabs ---------- */
+  nav.tabs{
+    display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:20px;
+    scrollbar-width:thin;
+  }
+  .tab{
+    display:flex; align-items:center; gap:8px;
+    padding:8px 14px; border-radius:999px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text-dim);
+    font-family:'Inter',sans-serif; font-size:.86rem; font-weight:500;
+    white-space:nowrap; cursor:pointer;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .tab .dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
+  .tab.active{color:var(--text); border-color:rgba(255,255,255,.18); background:var(--surface-2);}
+  .tab:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:2px;
+  }
+
+  /* ---------- exercise rows ---------- */
+  .exercise{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+  .exercise-head{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; padding:14px 16px; cursor:pointer;
+  }
+  .exercise-head-left{display:flex; align-items:center; gap:10px; min-width:0;}
+  .exercise-dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
+  .exercise-name{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.98rem;}
+  .exercise-meta{font-size:.78rem; color:var(--text-dim); margin-top:2px;}
+  .chevron{color:var(--text-dim); transition:transform .18s ease; flex-shrink:0;}
+  .exercise.open .chevron{transform:rotate(180deg);}
+  .exercise-body{
+    padding:0 16px 16px;
+    border-top:1px solid var(--border);
+  }
+  .set-form{display:flex; gap:8px; align-items:center; margin:14px 0 12px; flex-wrap:wrap;}
+  .set-form input{
+    width:84px; padding:9px 10px; border-radius:9px; border:1px solid var(--border);
+    background:var(--surface-2); color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:.92rem;
+  }
+  .logging-for{font-size:.78rem; color:var(--accent); font-weight:500; margin-bottom:8px;}
+  .set-form span{color:var(--text-dim); font-size:.82rem;}
+  .set-form button{
+    padding:9px 16px; border-radius:9px; border:none;
+    background:var(--accent); color:#12161a; font-weight:600; font-size:.85rem;
+    cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .set-form button:hover{filter:brightness(1.08);}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;}
+  .chip{
+    display:flex; align-items:center; gap:6px;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:999px; padding:5px 6px 5px 12px;
+    font-size:.82rem; font-family:'Space Grotesk',sans-serif;
+  }
+  .chip button{
+    background:none; border:none; color:var(--text-dim); cursor:pointer;
+    width:18px; height:18px; border-radius:50%; font-size:.78rem; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .chip button:hover{background:rgba(255,255,255,.08); color:var(--text);}
+  .history{border-top:1px dashed var(--border); padding-top:12px;}
+  .history-empty{font-size:.82rem; color:var(--text-dim); padding:4px 0 6px;}
+  .history-row{
+    display:flex; justify-content:space-between; gap:12px;
+    font-size:.82rem; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.04);
+  }
+  .history-row:last-child{border-bottom:none;}
+  .history-date{color:var(--text-dim); flex-shrink:0; width:64px;}
+  .history-sets{display:flex; flex-wrap:wrap; gap:6px; flex:1; justify-content:flex-end;}
+  .history-set{display:flex; align-items:center; gap:4px; color:var(--text);}
+  .history-set button{
+    background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:.72rem; padding:0;
+  }
+  .history-set button:hover{color:var(--red);}
+  .chart-wrap{margin:4px 0 12px;}
+
+  .add-exercise{margin-top:6px;}
+  .add-exercise-toggle{
+    width:100%; text-align:left; padding:12px 16px; border-radius:var(--radius);
+    border:1px dashed var(--border); background:transparent; color:var(--text-dim);
+    font-family:'Inter',sans-serif; font-size:.86rem; cursor:pointer;
+  }
+  .add-exercise-toggle:hover{color:var(--text); border-color:rgba(255,255,255,.2);}
+  .add-exercise-form{
+    display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;
+  }
+  .add-exercise-form input{
+    flex:1; min-width:160px; padding:10px 12px; border-radius:9px; border:1px solid var(--border);
+    background:var(--surface-2); color:var(--text); font-family:'Inter',sans-serif; font-size:.88rem;
+  }
+  .add-exercise-form button{
+    padding:10px 16px; border-radius:9px; border:none; background:var(--accent);
+    color:#12161a; font-weight:600; font-size:.85rem; cursor:pointer;
+  }
+
+  .rest-note{
+    font-size:.82rem; color:var(--text-dim); padding:2px 2px 16px;
+  }
+
+  @media (max-width:520px){
+    .today-info{order:3; width:100%;}
+    header.header{gap:12px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; animation:none !important;}
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand-name">Armyy</div>
+      <div class="today-info">
+        <input type="date" class="date-input" id="dateInput" data-action="select-date" aria-label="Editing date" />
+        <div class="today-split" id="todaySplit"></div>
+      </div>
+      <div class="streak">
+        <div class="streak-squares" id="streakSquares"></div>
+        <div class="streak-count"><b id="streakNum">0</b>&nbsp;day streak</div>
+      </div>
+    </header>
+
+    <nav class="tabs" id="tabs"></nav>
+    <div id="restNote"></div>
+    <main id="exerciseList"></main>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "armyy-forge-log-v1";
+
+  var GROUPS = [
+    { id:"chest-tri",      label:"Chest & Triceps",  color:"var(--red)",  days:[1,4] },
+    { id:"back-bi",        label:"Back & Biceps",    color:"var(--blue)", days:[2,5] },
+    { id:"legs-shoulders", label:"Legs & Shoulders", color:"var(--gold)", days:[3,6] },
+    { id:"abs-forearms",   label:"Abs & Forearms",   color:"var(--green)",days:[] }
+  ];
+
+  var DEFAULT_LIBRARY = {
+    "chest-tri": ["Barbell Bench Press","Incline Dumbbell Press","Cable Fly","Weighted Dips","Close-Grip Bench Press","Tricep Pushdown","Overhead Tricep Extension"],
+    "back-bi": ["Deadlift","Lat Pulldown","Barbell Row","Seated Cable Row","Barbell Curl","Hammer Curl","Preacher Curl"],
+    "legs-shoulders": ["Barbell Back Squat","Leg Press","Romanian Deadlift","Leg Curl","Leg Extension","Standing Calf Raise","Overhead Press","Lateral Raise","Rear Delt Fly"],
+    "abs-forearms": ["Hanging Leg Raise","Cable Crunch","Plank","Wrist Curl","Farmer's Carry"]
+  };
+
+  var state = { library: null, logs: {} };
+  var activeGroup = null;
+  var selectedDate = null; // the date currently being viewed/logged against, editable from the header
+  var expanded = {};        // exerciseName -> bool
+  var addFormOpen = {};     // groupId -> bool
+
+  function cloneDefaultLibrary(){
+    var out = {};
+    GROUPS.forEach(function(g){ out[g.id] = DEFAULT_LIBRARY[g.id].slice(); });
+    return out;
+  }
+
+  function pad(n){ return n<10 ? "0"+n : ""+n; }
+  function todayISO(){
+    var d = new Date();
+    return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  }
+  function isoOfOffset(daysAgo){
+    var d = new Date();
+    d.setDate(d.getDate()-daysAgo);
+    return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  }
+  function dateLabel(iso){
+    var parts = iso.split("-");
+    var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return d.getDate()+" "+months[d.getMonth()];
+  }
+  function weekdayLabel(iso){
+    var parts = iso.split("-");
+    var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+    var wk = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    return wk[d.getDay()];
+  }
+  function dateFromISO(iso){
+    var p = iso.split("-");
+    return new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10));
+  }
+  function groupForWeekday(day){
+    for(var i=0;i<GROUPS.length;i++){
+      if(GROUPS[i].days.indexOf(day)!==-1) return GROUPS[i].id;
+    }
+    return null;
+  }
+  function groupById(id){
+    for(var i=0;i<GROUPS.length;i++) if(GROUPS[i].id===id) return GROUPS[i];
+    return null;
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  // ---------- persistence ----------
+  // Prefers Claude's built-in artifact storage when available (e.g. viewed inline in Claude),
+  // falls back to the browser's localStorage when opened as a normal downloaded file,
+  // and falls back to in-memory (no persistence) if neither is available.
+  var memoryStore = {};
+  function detectBackend(){
+    if(typeof window.storage !== "undefined" && window.storage && typeof window.storage.get==="function" && typeof window.storage.set==="function"){
+      return "app";
+    }
+    try{
+      var testKey = "__forge_log_test__";
+      window.localStorage.setItem(testKey, "1");
+      window.localStorage.removeItem(testKey);
+      return "local";
+    }catch(e){
+      return "memory";
+    }
+  }
+  var backend = detectBackend();
+
+  function applyParsed(raw){
+    if(raw){
+      try{
+        var parsed = JSON.parse(raw);
+        state.library = parsed.library || cloneDefaultLibrary();
+        state.logs = parsed.logs || {};
+        GROUPS.forEach(function(g){
+          if(!state.library[g.id]) state.library[g.id] = DEFAULT_LIBRARY[g.id].slice();
+        });
+        return;
+      }catch(e){ /* fall through to defaults */ }
+    }
+    state.library = cloneDefaultLibrary();
+    state.logs = {};
+  }
+
+  function loadState(){
+    if(backend==="app"){
+      return window.storage.get(STORAGE_KEY, false).then(function(res){
+        applyParsed(res && res.value);
+      }).catch(function(){ applyParsed(null); });
+    }
+    if(backend==="local"){
+      var raw = null;
+      try{ raw = window.localStorage.getItem(STORAGE_KEY); }catch(e){}
+      applyParsed(raw);
+      return Promise.resolve();
+    }
+    applyParsed(memoryStore[STORAGE_KEY]);
+    return Promise.resolve();
+  }
+
+  function saveState(){
+    var raw = JSON.stringify(state);
+    if(backend==="app"){
+      window.storage.set(STORAGE_KEY, raw, false).catch(function(err){ console.error("Save failed", err); });
+    } else if(backend==="local"){
+      try{ window.localStorage.setItem(STORAGE_KEY, raw); }catch(e){ console.error("Save failed", e); }
+    } else {
+      memoryStore[STORAGE_KEY] = raw;
+    }
+  }
+
+  // ---------- data ops ----------
+  function getEntries(name){ return state.logs[name] || []; }
+  function getEntryForDate(name, date, create){
+    var list = state.logs[name];
+    if(!list){ list = []; state.logs[name] = list; }
+    var entry = null;
+    for(var i=0;i<list.length;i++) if(list[i].date===date){ entry = list[i]; break; }
+    if(!entry && create){
+      entry = { date:date, sets:[] };
+      list.push(entry);
+      list.sort(function(a,b){ return a.date < b.date ? -1 : (a.date>b.date?1:0); });
+    }
+    return entry;
+  }
+  function addSet(name, weight, reps){
+    weight = parseFloat(weight); reps = parseInt(reps,10);
+    if(!weight || weight<=0 || !reps || reps<=0) return;
+    var entry = getEntryForDate(name, selectedDate, true);
+    entry.sets.push({ weight:weight, reps:reps });
+    saveState();
+    renderAll();
+  }
+  function removeSet(name, date, idx){
+    var list = state.logs[name];
+    if(!list) return;
+    for(var i=0;i<list.length;i++){
+      if(list[i].date===date){
+        list[i].sets.splice(idx,1);
+        if(list[i].sets.length===0) list.splice(i,1);
+        break;
+      }
+    }
+    saveState();
+    renderAll();
+  }
+  function addExercise(groupId, name){
+    name = (name||"").trim();
+    if(!name) return;
+    var list = state.library[groupId];
+    var exists = list.some(function(n){ return n.toLowerCase()===name.toLowerCase(); });
+    if(!exists) list.push(name);
+    addFormOpen[groupId] = false;
+    saveState();
+    renderAll();
+  }
+
+  function computeLoggedDates(){
+    var s = {};
+    Object.keys(state.logs).forEach(function(name){
+      state.logs[name].forEach(function(entry){
+        if(entry.sets.length>0) s[entry.date]=true;
+      });
+    });
+    return s;
+  }
+  function computeStreak(loggedDates){
+    var streak = 0, i = 0;
+    while(true){
+      var iso = isoOfOffset(i);
+      if(loggedDates[iso]){ streak++; i++; }
+      else break;
+    }
+    return streak;
+  }
+  function topWeightOfEntry(entry){
+    var m = 0;
+    entry.sets.forEach(function(s){ if(s.weight>m) m=s.weight; });
+    return m;
+  }
+  function lastEntryBefore(name, iso){
+    var list = getEntries(name).filter(function(e){ return e.date < iso && e.sets.length>0; });
+    if(list.length===0) return null;
+    list.sort(function(a,b){ return a.date<b.date?-1:1; });
+    return list[list.length-1];
+  }
+
+  // ---------- rendering ----------
+  function renderHeader(){
+    var todayIso = todayISO();
+    var dateInput = document.getElementById("dateInput");
+    dateInput.max = todayIso;
+    dateInput.value = selectedDate;
+
+    var gid = groupForWeekday(dateFromISO(selectedDate).getDay());
+    var splitLabel = gid ? groupById(gid).label : "Rest day";
+    document.getElementById("todaySplit").textContent = splitLabel;
+
+    var loggedDates = computeLoggedDates();
+    var streak = computeStreak(loggedDates);
+    document.getElementById("streakNum").textContent = streak;
+
+    var sqHtml = "";
+    for(var i=6;i>=0;i--){
+      var iso = isoOfOffset(i);
+      sqHtml += '<div class="sq'+(loggedDates[iso]?' on':'')+'" title="'+iso+'"></div>';
+    }
+    document.getElementById("streakSquares").innerHTML = sqHtml;
+  }
+
+  function renderTabs(){
+    var html = "";
+    GROUPS.forEach(function(g){
+      html += '<button type="button" class="tab'+(g.id===activeGroup?' active':'')+'" data-action="select-tab" data-group="'+g.id+'">'
+            + '<span class="dot" style="background:'+g.color+'"></span>'+escapeHtml(g.label)+'</button>';
+    });
+    document.getElementById("tabs").innerHTML = html;
+
+    var restNoteEl = document.getElementById("restNote");
+    var todaysGroup = groupForWeekday(dateFromISO(selectedDate).getDay());
+    if(!todaysGroup && activeGroup==="abs-forearms"){
+      restNoteEl.innerHTML = '<div class="rest-note">Rest day on the split — bonus abs &amp; forearms work if you\'re up for it.</div>';
+    } else {
+      restNoteEl.innerHTML = "";
+    }
+  }
+
+  function buildChartSVG(entries){
+    var pts = entries.slice(-8);
+    if(pts.length < 2){
+      return '<div class="history-empty">Log a couple more sessions here to see a progress line.</div>';
+    }
+    var w = 640, h = 130, padL = 34, padR = 14, padT = 16, padB = 22;
+    var values = pts.map(topWeightOfEntry);
+    var maxV = Math.max.apply(null, values);
+    var minV = Math.min.apply(null, values);
+    if(maxV===minV){ maxV = maxV+1; minV = Math.max(0,minV-1); }
+    var innerW = w - padL - padR, innerH = h - padT - padB;
+    var stepX = pts.length>1 ? innerW/(pts.length-1) : 0;
+
+    function xAt(i){ return padL + stepX*i; }
+    function yAt(v){ return padT + innerH - ((v-minV)/(maxV-minV))*innerH; }
+
+    var linePts = pts.map(function(e,i){ return xAt(i).toFixed(1)+","+yAt(topWeightOfEntry(e)).toFixed(1); }).join(" ");
+
+    var circles = "", labels = "", valueLabels = "";
+    pts.forEach(function(e,i){
+      var x = xAt(i), y = yAt(topWeightOfEntry(e));
+      circles += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.5" fill="var(--accent)" />';
+      valueLabels += '<text x="'+x.toFixed(1)+'" y="'+(y-9).toFixed(1)+'" font-size="10" fill="var(--text)" text-anchor="middle" font-family="Space Grotesk, sans-serif">'+topWeightOfEntry(e)+'</text>';
+      labels += '<text x="'+x.toFixed(1)+'" y="'+(h-4)+'" font-size="9" fill="var(--text-dim)" text-anchor="middle">'+dateLabel(e.date)+'</text>';
+    });
+
+    return '<div class="chart-wrap"><svg viewBox="0 0 '+w+' '+h+'" width="100%" height="'+h+'" role="img" aria-label="Top set weight over recent sessions">'
+      + '<line x1="'+padL+'" y1="'+(padT+innerH)+'" x2="'+(w-padR)+'" y2="'+(padT+innerH)+'" stroke="var(--border)" stroke-width="1" />'
+      + '<polyline points="'+linePts+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />'
+      + circles + valueLabels + labels
+      + '</svg></div>';
+  }
+
+  function renderExerciseRow(name, groupId){
+    var isOpen = !!expanded[name];
+    var todayIso = todayISO();
+    var selEntry = null;
+    var list = getEntries(name);
+    for(var i=0;i<list.length;i++) if(list[i].date===selectedDate) selEntry = list[i];
+    var prev = lastEntryBefore(name, selectedDate);
+
+    var metaText;
+    if(selEntry && selEntry.sets.length){
+      metaText = (selectedDate===todayIso ? "Today" : dateLabel(selectedDate))+": "+selEntry.sets.length+" set"+(selEntry.sets.length>1?"s":"");
+      if(prev) metaText += " · Prev "+dateLabel(prev.date)+": "+topWeightOfEntry(prev)+"kg";
+    } else if(prev){
+      metaText = "Last "+dateLabel(prev.date)+": "+topWeightOfEntry(prev)+"kg top set";
+    } else {
+      metaText = "Not logged yet — tap to start";
+    }
+
+    var g = groupById(groupId);
+    var html = '<div class="exercise'+(isOpen?' open':'')+'">';
+    html += '<div class="exercise-head" data-action="toggle-exercise" data-name="'+escapeHtml(name)+'">';
+    html += '<div class="exercise-head-left"><span class="exercise-dot" style="background:'+g.color+'"></span>';
+    html += '<div><div class="exercise-name">'+escapeHtml(name)+'</div><div class="exercise-meta">'+escapeHtml(metaText)+'</div></div></div>';
+    html += '<span class="chevron">▾</span></div>';
+
+    if(isOpen){
+      html += '<div class="exercise-body">';
+      if(selectedDate!==todayIso){
+        html += '<div class="logging-for">Logging for '+weekdayLabel(selectedDate)+' '+dateLabel(selectedDate)+'</div>';
+      }
+      html += '<form class="set-form" data-action="add-set" data-name="'+escapeHtml(name)+'">';
+      html += '<input type="number" step="0.5" min="0" inputmode="decimal" placeholder="Weight" data-role="weight" aria-label="Weight in kg" required />';
+      html += '<span>kg ×</span>';
+      html += '<input type="number" step="1" min="1" inputmode="numeric" placeholder="Reps" data-role="reps" aria-label="Reps" required />';
+      html += '<span>reps</span>';
+      html += '<button type="submit">Add set</button>';
+      html += '</form>';
+
+      html += '<div class="history">';
+      var pastEntries = list.filter(function(e){ return e.sets.length>0; });
+      if(pastEntries.length===0){
+        html += '<div class="history-empty">No sessions logged yet for this one.</div>';
+      } else {
+        html += buildChartSVG(pastEntries);
+        var reversed = pastEntries.slice().sort(function(a,b){ return a.date<b.date?1:-1; });
+        reversed.forEach(function(e){
+          html += '<div class="history-row"><div class="history-date">'+weekdayLabel(e.date)+' '+dateLabel(e.date)+'</div><div class="history-sets">';
+          e.sets.forEach(function(s, idx){
+            html += '<span class="history-set">'+s.weight+'kg×'+s.reps
+                  + '<button type="button" data-action="remove-set" data-name="'+escapeHtml(name)+'" data-date="'+e.date+'" data-idx="'+idx+'" aria-label="Remove set">×</button></span>';
+          });
+          html += '</div></div>';
+        });
+      }
+      html += '</div>'; // history
+      html += '</div>'; // exercise-body
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderExerciseList(){
+    var container = document.getElementById("exerciseList");
+    var names = state.library[activeGroup] || [];
+    var html = "";
+    names.forEach(function(name){ html += renderExerciseRow(name, activeGroup); });
+
+    html += '<div class="add-exercise">';
+    if(addFormOpen[activeGroup]){
+      html += '<form class="add-exercise-form" data-action="add-exercise" data-group="'+activeGroup+'">';
+      html += '<input type="text" placeholder="Exercise name" data-role="exercise-name" autofocus required />';
+      html += '<button type="submit">Add</button>';
+      html += '</form>';
+    } else {
+      html += '<button type="button" class="add-exercise-toggle" data-action="open-add-exercise" data-group="'+activeGroup+'">+ Add exercise to '+escapeHtml(groupById(activeGroup).label)+'</button>';
+    }
+    html += '</div>';
+
+    container.innerHTML = html;
+  }
+
+  function renderAll(){
+    renderHeader();
+    renderTabs();
+    renderExerciseList();
+  }
+
+  // ---------- events (delegated so re-renders don't lose listeners) ----------
+  document.addEventListener("click", function(e){
+    var el = e.target.closest("[data-action]");
+    if(!el) return;
+    var action = el.getAttribute("data-action");
+
+    if(action==="select-tab"){
+      activeGroup = el.getAttribute("data-group");
+      renderTabs();
+      renderExerciseList();
+    } else if(action==="toggle-exercise"){
+      var name = el.getAttribute("data-name");
+      expanded[name] = !expanded[name];
+      renderExerciseList();
+    } else if(action==="remove-set"){
+      e.stopPropagation();
+      removeSet(el.getAttribute("data-name"), el.getAttribute("data-date"), parseInt(el.getAttribute("data-idx"),10));
+    } else if(action==="open-add-exercise"){
+      addFormOpen[el.getAttribute("data-group")] = true;
+      renderExerciseList();
+    }
+  });
+
+  document.addEventListener("change", function(e){
+    var el = e.target.closest('[data-action="select-date"]');
+    if(!el) return;
+    var val = el.value;
+    if(!val) return;
+    var todayIso = todayISO();
+    selectedDate = val > todayIso ? todayIso : val;
+    activeGroup = groupForWeekday(dateFromISO(selectedDate).getDay()) || "abs-forearms";
+    renderAll();
+  });
+
+  document.addEventListener("submit", function(e){
+    var form = e.target;
+    var action = form.getAttribute && form.getAttribute("data-action");
+    if(!action) return;
+    e.preventDefault();
+    if(action==="add-set"){
+      var name = form.getAttribute("data-name");
+      var w = form.querySelector('[data-role="weight"]').value;
+      var r = form.querySelector('[data-role="reps"]').value;
+      addSet(name, w, r);
+    } else if(action==="add-exercise"){
+      var groupId = form.getAttribute("data-group");
+      var val = form.querySelector('[data-role="exercise-name"]').value;
+      addExercise(groupId, val);
+    }
+  });
+
+  // ---------- init ----------
+  selectedDate = todayISO();
+  activeGroup = groupForWeekday(new Date().getDay()) || "abs-forearms";
+  loadState().then(renderAll);
+})();
+</script>
+</body>
+</html>
